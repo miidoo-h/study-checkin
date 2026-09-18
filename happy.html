@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生活打卡与小狗陪伴面板</title>
+  <style>
+    :root {
+      --bg: #f7f7fc;
+      --card: rgba(255,255,255,0.92);
+      --text: #344054;
+      --subtext: #667085;
+      --primary: #7c3aed;
+      --primary2: #6366f1;
+      --pink: #ec4899;
+      --blue: #3b82f6;
+      --green: #10b981;
+      --orange: #f59e0b;
+      --teal: #14b8a6;
+      --border: #ebe8ff;
+      --shadow: 0 10px 30px rgba(99,102,241,0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, #fdf0ff 0%, transparent 28%),
+        radial-gradient(circle at top right, #edf6ff 0%, transparent 24%),
+        linear-gradient(180deg, #fffaff 0%, #f7f7fc 100%);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--primary), var(--pink), var(--blue), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .desc {
+      color: var(--subtext);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    button {
+      border: none;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      color: white;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    button.light {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    button.danger {
+      background: linear-gradient(90deg, #ef4444, #f97316);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card, .section, .module, .pet-box {
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .card { padding: 18px; }
+
+    .small {
+      color: var(--subtext);
+      font-size: 14px;
+    }
+
+    .num {
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 8px;
+      color: #4338ca;
+    }
+
+    .section, .module, .pet-box {
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      color: #5b4fcf;
+    }
+
+    .module-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .move-title { color: #0f766e; }
+    .study-title { color: #7c3aed; }
+    .joy-title { color: #ec4899; }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .task-card {
+      border: 1px solid #ece9ff;
+      border-radius: 16px;
+      padding: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfaff 100%);
+    }
+
+    .task-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .task-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #4c46b6;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .tag-move { background: linear-gradient(90deg, #14b8a6, #22c55e); }
+    .tag-study { background: linear-gradient(90deg, #8b5cf6, #6366f1); }
+    .tag-joy { background: linear-gradient(90deg, #ec4899, #f97316); }
+
+    .progress {
+      height: 10px;
+      background: #eceafc;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0 8px;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #8b5cf6, #ec4899, #3b82f6, #14b8a6);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    input, select, textarea {
+      border: 1px solid #e7e4ff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: rgba(255,255,255,0.96);
+      color: var(--text);
+      box-sizing: border-box;
+    }
+
+    input, select {
+      min-width: 120px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      resize: vertical;
+    }
+
+    .flex1 { flex: 1; }
+
+    .record {
+      border: 1px solid #ece9ff;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+
+    .record-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .pet-box {
+      text-align: center;
+    }
+
+    .pet-emoji {
+      font-size: 54px;
+      line-height: 1.4;
+      animation: petBounce 1s ease;
+      margin-bottom: 10px;
+      min-height: 80px;
+    }
+
+    .pet-text {
+      color: #7c3aed;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    @keyframes petBounce {
+      0% { transform: scale(0.6) translateY(12px); opacity: 0; }
+      50% { transform: scale(1.1) translateY(-6px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 1100px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .task-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>生活打卡与小狗陪伴面板</h1>
+    <div class="desc">
+      三个方向：运动、学习、愉悦。<br>
+      你可以长期记录，系统会自动保留历史，并按周/月/自定义时间统计。
+    </div>
+
+    <div class="topbar">
+      <button class="light" onclick="exportData()">导出数据</button>
+      <button class="light" onclick="copyExport()">复制导出数据</button>
+      <button class="light" onclick="importData()">导入数据</button>
+      <button class="light" onclick="copySummary()">复制总结</button>
+      <button class="danger" onclick="resetAll()">清空全部</button>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="small">本周总打卡</div>
+        <div class="num" id="weeklyCount">0</div>
+      </div>
+      <div class="card">
+        <div class="small">本周总时长</div>
+        <div class="num" id="weeklyMinutes">0</div>
+      </div>
+      <div class="card">
+        <div class="small">累计总打卡</div>
+        <div class="num" id="allCount">0</div>
+      </div>
+      <div class="card">
+        <div class="small">累计总时长</div>
+        <div class="num" id="allMinutes">0</div>
+      </div>
+      <div class="card">
+        <div class="small">本周达标任务</div>
+        <div class="num" id="finishedTaskCount">0</div>
+      </div>
+      <div class="card">
+        <div class="small">当前任务总数</div>
+        <div class="num" id="taskCount">0</div>
+      </div>
+    </div>
+
+    <div class="pet-box">
+      <div id="petEmoji" class="pet-emoji">🐶✨</div>
+      <div id="petText" class="pet-text">今天也在认真生活呀</div>
+    </div>
+
+    <div class="module">
+      <div class="module-title move-title">运动</div>
+      <div class="task-grid" id="moveTasks"></div>
+    </div>
+
+    <div class="module">
+      <div class="module-title study-title">学习</div>
+      <div class="task-grid" id="studyTasks"></div>
+    </div>
+
+    <div class="module">
+      <div class="module-title joy-title">愉悦</div>
+      <div class="task-grid" id="joyTasks"></div>
+    </div>
+
+    <div class="section">
+      <h2>添加自定义任务</h2>
+      <div class="row">
+        <select id="customCategory">
+          <option value="move">运动</option>
+          <option value="study">学习</option>
+          <option value="joy">愉悦</option>
+        </select>
+        <input id="customTaskName" class="flex1" placeholder="输入自定义任务，例如：跑步 / 写日记">
+        <input id="customTaskTarget" type="number" min="1" value="2" placeholder="每周目标次数">
+        <button onclick="addCustomTask()">添加任务</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>总结生成器</h2>
+      <div class="row">
+        <button onclick="makeWeekSummary()">周总结</button>
+        <button onclick="makeMonthSummary()">月总结</button>
+        <button onclick="makeHalfYearSummary()">半年总结</button>
+      </div>
+      <div class="row">
+        <input id="startDate" type="date">
+        <input id="endDate" type="date">
+        <button onclick="makeCustomSummary()">生成自定义时间跨度总结</button>
+      </div>
+      <textarea id="summaryBox" placeholder="总结会显示在这里"></textarea>
+    </div>
+
+    <div class="section">
+      <h2>分享数据</h2>
+      <textarea id="shareBox" placeholder="点击“导出数据”后，这里会出现可分享的数据。"></textarea>
+    </div>
+
+    <div class="section">
+      <h2>打卡记录</h2>
+      <div id="recordList"></div>
+    </div>
+  </div>
+
+  <script>
+    var STORAGE_KEY = "pet-checkin-v1";
+
+    function defaultState() {
+      return {
+        tasks: [
+          { id: "m1", category: "move", name: "瑜伽", target: 2, custom: false },
+          { id: "m2", category: "move", name: "游泳", target: 2, custom: false },
+
+          { id: "s1", category: "study", name: "阅读", target: 4, custom: false },
+          { id: "s2", category: "study", name: "听书", target: 3, custom: false },
+
+          { id: "j1", category: "joy", name: "散步", target: 3, custom: false },
+          { id: "j2", category: "joy", name: "给小米吃东西", target: 7, custom: false }
+        ],
+        records: [],
+        pet: {
+          emoji: "🐶✨",
+          text: "今天也在认真生活呀"
+        }
+      };
+    }
+
+    function loadState() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultState();
+        var parsed = JSON.parse(raw);
+        if (!parsed.tasks) parsed.tasks = defaultState().tasks;
+        if (!parsed.records) parsed.records = [];
+        if (!parsed.pet) parsed.pet = defaultState().pet;
+        return parsed;
+      } catch (e) {
+        return defaultState();
+      }
+    }
+
+    var state = loadState();
+
+    var categoryMap = {
+      move: "运动",
+      study: "学习",
+      joy: "愉悦"
+    };
+
+    var petEmojis = [
+      "🐶🍖", "🐶💤", "🐶🚶", "🐶🎾", "🐶🦴", "🐶🛁",
+      "🐶☀️", "🐶🧸", "🐶🌼", "🐶🪀", "🐶🍪", "🐶💛"
+    ];
+
+    var petTexts = [
+      "今天也在认真生活呀",
+      "小步前进也很厉害",
+      "你已经做得很好了",
+      "继续慢慢来就很棒",
+      "稳定一点点也很珍贵",
+      "现在的你也值得被夸奖",
+      "生活正在被你温柔地整理",
+      "做完这一点就已经很棒啦"
+    ];
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function esc(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function weekStart() {
+      var d = new Date();
+      var day = d.getDay();
+      var diff = day === 0 ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function weekEnd() {
+      var d = weekStart();
+      d.setDate(d.getDate() + 6);
+      d.setHours(23, 59, 59, 999);
+      return d;
+    }
+
+    function monthStart() {
+      var d = new Date();
+      return new Date(d.getFullYear(), d.getMonth(), 1);
+    }
+
+    function monthEnd() {
+      var d = new Date();
+      return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+    }
+
+    function halfYearStart() {
+      var d = new Date();
+      var m = d.getMonth();
+      return m < 6 ? new Date(d.getFullYear(), 0, 1) : new Date(d.getFullYear(), 6, 1);
+    }
+
+    function halfYearEnd() {
+      var d = new Date();
+      var m = d.getMonth();
+      return m < 6
+        ? new Date(d.getFullYear(), 5, 30, 23, 59, 59, 999)
+        : new Date(d.getFullYear(), 11, 31, 23, 59, 59, 999);
+    }
+
+    function inRange(dateStr, start, end) {
+      var d = new Date(dateStr + "T00:00:00");
+      return d >= start && d <= end;
+    }
+
+    function weeklyTaskCount(taskId) {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        if (state.records[i].taskId === taskId && inRange(state.records[i].date, weekStart(), weekEnd())) {
+          n++;
+        }
+      }
+      return n;
+    }
+
+    function weeklyCountAll() {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        if (inRange(state.records[i].date, weekStart(), weekEnd())) n++;
+      }
+      return n;
+    }
+
+    function weeklyMinutesAll() {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        if (inRange(state.records[i].date, weekStart(), weekEnd())) n += Number(state.records[i].minutes || 0);
+      }
+      return n;
+    }
+
+    function allCount() {
+      return state.records.length;
+    }
+
+    function allMinutes() {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        n += Number(state.records[i].minutes || 0);
+      }
+      return n;
+    }
+
+    function finishedTaskCount() {
+      var n = 0;
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (weeklyTaskCount(state.tasks[i].id) >= Number(state.tasks[i].target || 0)) n++;
+      }
+      return n;
+    }
+
+    function randomPetMood() {
+      var emoji = petEmojis[Math.floor(Math.random() * petEmojis.length)];
+      var text = petTexts[Math.floor(Math.random() * petTexts.length)];
+      state.pet = { emoji: emoji, text: text };
+      saveState();
+      renderPet();
+    }
+
+    function addCustomTask() {
+      var category = document.getElementById("customCategory").value;
+      var name = document.getElementById("customTaskName").value.trim();
+      var target = Number(document.getElementById("customTaskTarget").value || 0);
+
+      if (!name) {
+        alert("请输入任务名称");
+        return;
+      }
+      if (!target || target <= 0) {
+        alert("请输入有效目标次数");
+        return;
+      }
+
+      state.tasks.push({
+        id: "custom_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        category: category,
+        name: name,
+        target: target,
+        custom: true
+      });
+
+      saveState();
+      render();
+
+      document.getElementById("customTaskName").value = "";
+      document.getElementById("customTaskTarget").value = 2;
+    }
+
+    function updateTaskTarget(taskId, value) {
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].id === taskId) {
+          state.tasks[i].target = Number(value || 1);
+        }
+      }
+      saveState();
+      render();
+    }
+
+    function deleteCustomTask(taskId) {
+      var task = null;
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].id === taskId) task = state.tasks[i];
+      }
+
+      if (!task || !task.custom) {
+        alert("预设任务不可删除，只能修改目标次数。");
+        return;
+      }
+
+      if (!confirm("确定删除这个自定义任务吗？")) return;
+
+      var arr = [];
+      for (var j = 0; j < state.tasks.length; j++) {
+        if (state.tasks[j].id !== taskId) arr.push(state.tasks[j]);
+      }
+      state.tasks = arr;
+
+      saveState();
+      render();
+    }
+
+    function addRecord(taskId) {
+      var minutes = Number(document.getElementById("minutes_" + taskId).value || 0);
+      var date = document.getElementById("date_" + taskId).value || todayStr();
+      var note = document.getElementById("note_" + taskId).value.trim();
+
+      if (!minutes || minutes <= 0) {
+        alert("请输入分钟数");
+        return;
+      }
+
+      var task = null;
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].id === taskId) task = state.tasks[i];
+      }
+
+      if (!task) {
+        alert("任务不存在");
+        return;
+      }
+
+      state.records.unshift({
+        id: "record_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        taskId: task.id,
+        category: task.category,
+        taskName: task.name,
+        minutes: minutes,
+        date: date,
+        note: note
+      });
+
+      saveState();
+      render();
+      randomPetMood();
+    }
+
+    function deleteRecord(recordId) {
+      var arr = [];
+      for (var i = 0; i < state.records.length; i++) {
+        if (state.records[i].id !== recordId) arr.push(state.records[i]);
+      }
+      state.records = arr;
+      saveState();
+      render();
+    }
+
+    function exportData() {
+      document.getElementById("shareBox").value = JSON.stringify(state, null, 2);
+    }
+
+    function copyExport() {
+      var box = document.getElementById("shareBox");
+      if (!box.value.trim()) exportData();
+      box.select();
+      document.execCommand("copy");
+      alert("已复制导出数据");
+    }
+
+    function importData() {
+      var text = prompt("请粘贴分享数据：");
+      if (!text) return;
+      try {
+        var parsed = JSON.parse(text);
+        if (!parsed.tasks || !parsed.records) {
+          alert("数据格式不正确");
+          return;
+        }
+        state = parsed;
+        if (!state.pet) state.pet = defaultState().pet;
+        saveState();
+        render();
+        alert("导入成功");
+      } catch (e) {
+        alert("导入失败");
+      }
+    }
+
+    function buildSummary(start, end, title) {
+      var list = [];
+      var totalMin = 0;
+      var categoryCount = { move: 0, study: 0, joy: 0 };
+      var taskMap = {};
+
+      for (var i = 0; i < state.records.length; i++) {
+        var r = state.records[i];
+        if (inRange(r.date, start, end)) {
+          list.push(r);
+          totalMin += Number(r.minutes || 0);
+          if (!categoryCount[r.category]) categoryCount[r.category] = 0;
+          categoryCount[r.category]++;
+          if (!taskMap[r.taskName]) taskMap[r.taskName] = 0;
+          taskMap[r.taskName]++;
+        }
+      }
+
+      var top = [];
+      for (var key in taskMap) {
+        top.push([key, taskMap[key]]);
+      }
+      top.sort(function(a, b) { return b[1] - a[1]; });
+
+      var topText = "暂无";
+      if (top.length > 0) {
+        var arr = [];
+        for (var j = 0; j < Math.min(5, top.length); j++) {
+          arr.push(top[j][0] + "（" + top[j][1] + "次）");
+        }
+        topText = arr.join("、");
+      }
+
+      var avg = list.length ? Math.round(totalMin / list.length) : 0;
+
+      var text =
+        "【" + title + "】\n\n" +
+        "时间范围：" + start.toISOString().slice(0,10) + " 至 " + end.toISOString().slice(0,10) + "\n\n" +
+        "总打卡次数：" + list.length + "\n" +
+        "总时长：" + totalMin + " 分钟\n" +
+        "平均每次时长：" + avg + " 分钟\n\n" +
+        "运动：" + categoryCount.move + " 次\n" +
+        "学习：" + categoryCount.study + " 次\n" +
+        "愉悦：" + categoryCount.joy + " 次\n\n" +
+        "高频任务：" + topText + "\n\n" +
+        "建议：\n" +
+        "1. 保持运动、学习、愉悦三者的平衡。\n" +
+        "2. 不用追求完美，稳定一点点也很珍贵。\n" +
+        "3. 愉悦类任务也很重要，它们不是“偷懒”，而是生活的一部分。";
+
+      document.getElementById("summaryBox").value = text;
+    }
+
+    function makeWeekSummary() {
+      buildSummary(weekStart(), weekEnd(), "周总结");
+    }
+
+    function makeMonthSummary() {
+      buildSummary(monthStart(), monthEnd(), "月总结");
+    }
+
+    function makeHalfYearSummary() {
+      buildSummary(halfYearStart(), halfYearEnd(), "半年总结");
+    }
+
+    function makeCustomSummary() {
+      var s = document.getElementById("startDate").value;
+      var e = document.getElementById("endDate").value;
+
+      if (!s || !e) {
+        alert("请选择开始和结束日期");
+        return;
+      }
+
+      var start = new Date(s + "T00:00:00");
+      var end = new Date(e + "T23:59:59");
+
+      if (start > end) {
+        alert("开始日期不能晚于结束日期");
+        return;
+      }
+
+      buildSummary(start, end, "自定义时间跨度总结");
+    }
+
+    function copySummary() {
+      var box = document.getElementById("summaryBox");
+      if (!box.value.trim()) {
+        alert("请先生成总结");
+        return;
+      }
+      box.select();
+      document.execCommand("copy");
+      alert("已复制总结");
+    }
+
+    function resetAll() {
+      if (!confirm("确定清空全部吗？")) return;
+      state = defaultState();
+      saveState();
+      render();
+    }
+
+    function taskTagClass(category) {
+      if (category === "move") return "tag tag-move";
+      if (category === "study") return "tag tag-study";
+      return "tag tag-joy";
+    }
+
+    function renderPet() {
+      var emojiEl = document.getElementById("petEmoji");
+      var textEl = document.getElementById("petText");
+
+      emojiEl.textContent = state.pet.emoji;
+      textEl.textContent = state.pet.text;
+
+      emojiEl.style.animation = "none";
+      void emojiEl.offsetWidth;
+      emojiEl.style.animation = "petBounce 1s ease";
+    }
+
+    function renderStats() {
+      document.getElementById("weeklyCount").textContent = weeklyCountAll();
+      document.getElementById("weeklyMinutes").textContent = weeklyMinutesAll();
+      document.getElementById("allCount").textContent = allCount();
+      document.getElementById("allMinutes").textContent = allMinutes();
+      document.getElementById("finishedTaskCount").textContent = finishedTaskCount();
+      document.getElementById("taskCount").textContent = state.tasks.length;
+    }
+
+    function buildTaskCard(t) {
+      var done = weeklyTaskCount(t.id);
+      var target = Number(t.target || 1);
+      var percent = Math.min(done / target * 100, 100);
+
+      var deleteBtn = "";
+      if (t.custom) {
+        deleteBtn = '<button class="light" onclick="deleteCustomTask(\'' + t.id + '\')">删除自定义任务</button>';
+      }
+
+      return ''
+        + '<div class="task-card">'
+        +   '<div class="task-head">'
+        +     '<div>'
+        +       '<div class="task-name">' + esc(t.name) + '</div>'
+        +       '<div class="small">' + esc(categoryMap[t.category]) + '</div>'
+        +     '</div>'
+        +     '<span class="' + taskTagClass(t.category) + '">' + esc(categoryMap[t.category]) + '</span>'
+        +   '</div>'
+        +   '<div class="small">本周完成：' + done + ' / ' + target + '</div>'
+        +   '<div class="progress"><div class="bar" style="width:' + percent + '%"></div></div>'
+        +   '<div class="row">'
+        +     '<input type="number" value="' + target + '" min="1" onchange="updateTaskTarget(\'' + t.id + '\', this.value)" placeholder="目标次数">'
+        +     deleteBtn
+        +   '</div>'
+        +   '<div class="row">'
+        +     '<input id="minutes_' + t.id + '" type="number" placeholder="分钟数">'
+        +     '<input id="date_' + t.id + '" type="date" value="' + todayStr() + '">'
+        +   '</div>'
+        +   '<div class="row">'
+        +     '<input id="note_' + t.id + '" class="flex1" placeholder="备注（可选）">'
+        +     '<button onclick="addRecord(\'' + t.id + '\')">打卡</button>'
+        +   '</div>'
+        + '</div>';
+    }
+
+    function renderModule(category, targetId) {
+      var html = "";
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].category === category) {
+          html += buildTaskCard(state.tasks[i]);
+        }
+      }
+      document.getElementById(targetId).innerHTML = html || '<div class="small">暂无任务</div>';
+    }
+
+    function renderRecords() {
+      var html = "";
+      if (!state.records.length) {
+        html = '<div class="small">还没有记录，先打第一条卡吧。</div>';
+      } else {
+        for (var i = 0; i < state.records.length; i++) {
+          var r = state.records[i];
+          html += ''
+            + '<div class="record">'
+            +   '<div class="record-top">'
+            +     '<span class="' + taskTagClass(r.category) + '">' + esc(categoryMap[r.category]) + '</span>'
+            +     '<span class="small">' + esc(r.date) + '</span>'
+            +   '</div>'
+            +   '<div><strong>' + esc(r.taskName) + '</strong> · ' + r.minutes + ' 分钟</div>'
+            +   (r.note ? '<div class="small" style="margin-top:6px;">' + esc(r.note) + '</div>' : '')
+            +   '<div style="margin-top:8px;"><button class="light" onclick="deleteRecord(\'' + r.id + '\')">删除记录</button></div>'
+            + '</div>';
+        }
+      }
+      document.getElementById("recordList").innerHTML = html;
+    }
+
+    function render() {
+      renderStats();
+      renderModule("move", "moveTasks");
+      renderModule("study", "studyTasks");
+      renderModule("joy", "joyTasks");
+      renderRecords();
+      renderPet();
+    }
+
+    render();
+  </script>
+</body>
+</html>
