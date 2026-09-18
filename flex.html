@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>长期版自由目标学习与运动面板</title>
+  <style>
+    :root {
+      --bg: #f7f7fc;
+      --card: rgba(255,255,255,0.92);
+      --text: #344054;
+      --subtext: #667085;
+      --primary: #7c3aed;
+      --primary2: #6366f1;
+      --pink: #ec4899;
+      --blue: #3b82f6;
+      --green: #10b981;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --teal: #14b8a6;
+      --border: #ebe9ff;
+      --shadow: 0 10px 30px rgba(99,102,241,0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, #f5eefe 0%, transparent 30%),
+        radial-gradient(circle at top right, #eaf2ff 0%, transparent 28%),
+        linear-gradient(180deg, #fafaff 0%, #f6f7fb 100%);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--primary), var(--pink), var(--blue), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .desc {
+      color: var(--subtext);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    button {
+      border: none;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      color: white;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    button.light {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    button.danger {
+      background: linear-gradient(90deg, #ef4444, #f97316);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card, .section {
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .small {
+      color: var(--subtext);
+      font-size: 14px;
+    }
+
+    .num {
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 8px;
+      color: #4338ca;
+    }
+
+    .section {
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      color: #5b4fcf;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    input, select, textarea {
+      border: 1px solid #e7e4ff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: rgba(255,255,255,0.96);
+      color: var(--text);
+      box-sizing: border-box;
+    }
+
+    input, select {
+      min-width: 140px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    .flex1 { flex: 1; }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .task-card {
+      border: 1px solid #ece9ff;
+      border-radius: 16px;
+      padding: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfaff 100%);
+    }
+
+    .task-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .task-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #4c46b6;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .tag-grad { background: linear-gradient(90deg, #8b5cf6, #6366f1); }
+    .tag-ielts { background: linear-gradient(90deg, #ec4899, #f97316); }
+    .tag-invest { background: linear-gradient(90deg, #0ea5e9, #10b981); }
+    .tag-sport { background: linear-gradient(90deg, #14b8a6, #22c55e); }
+    .tag-archived { background: linear-gradient(90deg, #94a3b8, #64748b); }
+
+    .progress {
+      height: 10px;
+      background: #eceafc;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0 8px;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #8b5cf6, #ec4899, #3b82f6, #14b8a6);
+    }
+
+    .record {
+      border: 1px solid #ece9ff;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+
+    .record-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .archived-box {
+      margin-top: 10px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .archived-item {
+      border: 1px dashed #d8d6f8;
+      border-radius: 14px;
+      padding: 12px;
+      background: #fcfcff;
+    }
+
+    @media (max-width: 1100px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .task-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>长期版自由目标学习与运动面板</h1>
+    <div class="desc">
+      支持长期使用：保留历史记录、每周自动重新统计当前进度、任务可归档与恢复。<br>
+      四大模块：研究生学习、雅思、学习投资、运动。
+    </div>
+
+    <div class="topbar">
+      <button class="light" onclick="exportData()">导出数据</button>
+      <button class="light" onclick="copyExport()">复制导出数据</button>
+      <button class="light" onclick="importData()">导入数据</button>
+      <button class="light" onclick="copySummary()">复制总结</button>
+      <button class="danger" onclick="resetAll()">清空全部</button>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="small">本周总打卡</div>
+        <div class="num" id="weeklyCount">0</div>
+      </div>
+      <div class="card">
+        <div class="small">本周总时长</div>
+        <div class="num" id="weeklyMinutes">0</div>
+      </div>
+      <div class="card">
+        <div class="small">累计总打卡</div>
+        <div class="num" id="allCount">0</div>
+      </div>
+      <div class="card">
+        <div class="small">累计总时长</div>
+        <div class="num" id="allMinutes">0</div>
+      </div>
+      <div class="card">
+        <div class="small">活跃任务</div>
+        <div class="num" id="activeTaskCount">0</div>
+      </div>
+      <div class="card">
+        <div class="small">归档任务</div>
+        <div class="num" id="archivedTaskCount">0</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>新增长期任务</h2>
+      <div class="row">
+        <select id="newTaskCategory">
+          <option value="grad">研究生学习</option>
+          <option value="ielts">雅思</option>
+          <option value="invest">学习投资</option>
+          <option value="sport">运动</option>
+        </select>
+        <input id="newTaskName" class="flex1" placeholder="任务名，例如：文献阅读 / 单词 / 游泳 / 健身 / 跑步">
+        <input id="newTaskTarget" type="number" placeholder="每周目标次数" min="1" value="2">
+        <button onclick="addTask()">添加任务</button>
+      </div>
+      <div class="small" style="margin-top:10px;">
+        新任务会长期保留。之后不需要时建议归档，而不是删除。
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>活跃任务打卡区</h2>
+      <div class="task-grid" id="taskGrid"></div>
+    </div>
+
+    <div class="section">
+      <h2>归档任务</h2>
+      <div class="small">归档任务不会出现在主打卡区，但历史记录仍然保留，也能恢复。</div>
+      <div class="archived-box" id="archivedBox"></div>
+    </div>
+
+    <div class="section">
+      <h2>总结生成器</h2>
+      <div class="row">
+        <button onclick="makeWeekSummary()">周总结</button>
+        <button onclick="makeMonthSummary()">月总结</button>
+        <button onclick="makeHalfYearSummary()">半年总结</button>
+      </div>
+      <div class="row">
+        <input id="startDate" type="date">
+        <input id="endDate" type="date">
+        <button onclick="makeCustomSummary()">生成自定义时间跨度总结</button>
+      </div>
+      <textarea id="summaryBox" placeholder="总结会显示在这里"></textarea>
+    </div>
+
+    <div class="section">
+      <h2>分享数据</h2>
+      <textarea id="shareBox" placeholder="点击“导出数据”后，这里会出现可分享的数据。"></textarea>
+    </div>
+
+    <div class="section">
+      <h2>全部历史记录</h2>
+      <div id="recordList"></div>
+    </div>
+  </div>
+
+  <script>
+    var STORAGE_KEY = "study-checkin-flex-v3";
+
+    function defaultState() {
+      return {
+        tasks: [
+          { id: "t1", category: "grad", name: "作业", target: 2, status: "active" },
+          { id: "t2", category: "grad", name: "文献阅读", target: 2, status: "active" },
+          { id: "t3", category: "ielts", name: "单词", target: 5, status: "active" },
+          { id: "t4", category: "ielts", name: "精听", target: 3, status: "active" },
+          { id: "t5", category: "ielts", name: "文本", target: 2, status: "active" },
+          { id: "t6", category: "ielts", name: "口语", target: 2, status: "active" },
+          { id: "t7", category: "invest", name: "基础学习", target: 2, status: "active" },
+          { id: "t8", category: "invest", name: "阅读复盘", target: 1, status: "active" },
+          { id: "t9", category: "sport", name: "游泳", target: 2, status: "active" },
+          { id: "t10", category: "sport", name: "健身", target: 2, status: "active" },
+          { id: "t11", category: "sport", name: "其他运动", target: 1, status: "active" }
+        ],
+        records: []
+      };
+    }
+
+    function loadState() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultState();
+        var parsed = JSON.parse(raw);
+        if (!parsed.tasks) parsed.tasks = defaultState().tasks;
+        if (!parsed.records) parsed.records = [];
+        for (var i = 0; i < parsed.tasks.length; i++) {
+          if (!parsed.tasks[i].status) parsed.tasks[i].status = "active";
+        }
+        return parsed;
+      } catch (e) {
+        return defaultState();
+      }
+    }
+
+    var state = loadState();
+
+    var categoryMap = {
+      grad: "研究生学习",
+      ielts: "雅思",
+      invest: "学习投资",
+      sport: "运动"
+    };
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function esc(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function weekStart() {
+      var d = new Date();
+      var day = d.getDay();
+      var diff = day === 0 ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function weekEnd() {
+      var d = weekStart();
+      d.setDate(d.getDate() + 6);
+      d.setHours(23, 59, 59, 999);
+      return d;
+    }
+
+    function monthStart() {
+      var d = new Date();
+      return new Date(d.getFullYear(), d.getMonth(), 1);
+    }
+
+    function monthEnd() {
+      var d = new Date();
+      return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+    }
+
+    function halfYearStart() {
+      var d = new Date();
+      var m = d.getMonth();
+      return m < 6 ? new Date(d.getFullYear(), 0, 1) : new Date(d.getFullYear(), 6, 1);
+    }
+
+    function halfYearEnd() {
+      var d = new Date();
+      var m = d.getMonth();
+      return m < 6
+        ? new Date(d.getFullYear(), 5, 30, 23, 59, 59, 999)
+        : new Date(d.getFullYear(), 11, 31, 23, 59, 59, 999);
+    }
+
+    function inRange(dateStr, start, end) {
+      var d = new Date(dateStr + "T00:00:00");
+      return d >= start && d <= end;
+    }
+
+    function taskById(taskId) {
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].id === taskId) return state.tasks[i];
+      }
+      return null;
+    }
+
+    function weeklyTaskCount(taskId) {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        if (state.records[i].taskId === taskId && inRange(state.records[i].date, weekStart(), weekEnd())) n++;
+      }
+      return n;
+    }
+
+    function weeklyCountAll() {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        if (inRange(state.records[i].date, weekStart(), weekEnd())) n++;
+      }
+      return n;
+    }
+
+    function weeklyMinutesAll() {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        if (inRange(state.records[i].date, weekStart(), weekEnd())) n += Number(state.records[i].minutes || 0);
+      }
+      return n;
+    }
+
+    function allCount() {
+      return state.records.length;
+    }
+
+    function allMinutes() {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        n += Number(state.records[i].minutes || 0);
+      }
+      return n;
+    }
+
+    function activeTaskCount() {
+      var n = 0;
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].status === "active") n++;
+      }
+      return n;
+    }
+
+    function archivedTaskCount() {
+      var n = 0;
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].status === "archived") n++;
+      }
+      return n;
+    }
+
+    function addTask() {
+      var category = document.getElementById("newTaskCategory").value;
+      var name = document.getElementById("newTaskName").value.trim();
+      var target = Number(document.getElementById("newTaskTarget").value || 0);
+
+      if (!name) {
+        alert("请输入任务名");
+        return;
+      }
+      if (!target || target <= 0) {
+        alert("请输入有效目标次数");
+        return;
+      }
+
+      state.tasks.push({
+        id: "task_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        category: category,
+        name: name,
+        target: target,
+        status: "active"
+      });
+
+      saveState();
+      render();
+
+      document.getElementById("newTaskName").value = "";
+      document.getElementById("newTaskTarget").value = 2;
+    }
+
+    function updateTaskTarget(taskId, value) {
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].id === taskId) state.tasks[i].target = Number(value || 1);
+      }
+      saveState();
+      render();
+    }
+
+    function archiveTask(taskId) {
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].id === taskId) state.tasks[i].status = "archived";
+      }
+      saveState();
+      render();
+    }
+
+    function restoreTask(taskId) {
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].id === taskId) state.tasks[i].status = "active";
+      }
+      saveState();
+      render();
+    }
+
+    function permanentDeleteTask(taskId) {
+      if (!confirm("确定永久删除这个任务吗？历史记录也会被一并删除。")) return;
+
+      var newTasks = [];
+      for (var i = 0; i < state.tasks.length; i++) {
+        if (state.tasks[i].id !== taskId) newTasks.push(state.tasks[i]);
+      }
+      state.tasks = newTasks;
+
+      var newRecords = [];
+      for (var j = 0; j < state.records.length; j++) {
+        if (state.records[j].taskId !== taskId) newRecords.push(state.records[j]);
+      }
+      state.records = newRecords;
+
+      saveState();
+      render();
+    }
+
+    function addRecord(taskId) {
+      var minutes = Number(document.getElementById("minutes_" + taskId).value || 0);
+      var date = document.getElementById("date_" + taskId).value || todayStr();
+      var note = document.getElementById("note_" + taskId).value.trim();
+      var task = taskById(taskId);
+
+      if (!task) {
+        alert("任务不存在");
+        return;
+      }
+
+      if (!minutes || minutes <= 0) {
+        alert("请输入分钟数");
+        return;
+      }
+
+      state.records.unshift({
+        id: "record_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        taskId: task.id,
+        category: task.category,
+        taskName: task.name,
+        minutes: minutes,
+        date: date,
+        note: note
+      });
+
+      saveState();
+      render();
+    }
+
+    function deleteRecord(recordId) {
+      var arr = [];
+      for (var i = 0; i < state.records.length; i++) {
+        if (state.records[i].id !== recordId) arr.push(state.records[i]);
+      }
+      state.records = arr;
+      saveState();
+      render();
+    }
+
+    function exportData() {
+      document.getElementById("shareBox").value = JSON.stringify(state, null, 2);
+    }
+
+    function copyExport() {
+      var box = document.getElementById("shareBox");
+      if (!box.value.trim()) exportData();
+      box.select();
+      document.execCommand("copy");
+      alert("已复制导出数据");
+    }
+
+    function importData() {
+      var text = prompt("请粘贴分享数据：");
+      if (!text) return;
+      try {
+        var parsed = JSON.parse(text);
+        if (!parsed.tasks || !parsed.records) {
+          alert("数据格式不正确");
+          return;
+        }
+        state = parsed;
+        for (var i = 0; i < state.tasks.length; i++) {
+          if (!state.tasks[i].status) state.tasks[i].status = "active";
+        }
+        saveState();
+        render();
+        alert("导入成功");
+      } catch (e) {
+        alert("导入失败");
+      }
+    }
+
+    function buildSummary(start, end, title) {
+      var list = [];
+      var totalMin = 0;
+      var categoryCount = { grad: 0, ielts: 0, invest: 0, sport: 0 };
+      var taskMap = {};
+
+      for (var i = 0; i < state.records.length; i++) {
+        var r = state.records[i];
+        if (inRange(r.date, start, end)) {
+          list.push(r);
+          totalMin += Number(r.minutes || 0);
+          if (!categoryCount[r.category]) categoryCount[r.category] = 0;
+          categoryCount[r.category]++;
+          if (!taskMap[r.taskName]) taskMap[r.taskName] = 0;
+          taskMap[r.taskName]++;
+        }
+      }
+
+      var top = [];
+      for (var key in taskMap) {
+        top.push([key, taskMap[key]]);
+      }
+      top.sort(function(a, b) { return b[1] - a[1]; });
+
+      var topText = "暂无";
+      if (top.length > 0) {
+        var arr = [];
+        for (var j = 0; j < Math.min(5, top.length); j++) {
+          arr.push(top[j][0] + "（" + top[j][1] + "次）");
+        }
+        topText = arr.join("、");
+      }
+
+      var avg = list.length ? Math.round(totalMin / list.length) : 0;
+
+      var text =
+        "【" + title + "】\n\n" +
+        "时间范围：" + start.toISOString().slice(0,10) + " 至 " + end.toISOString().slice(0,10) + "\n\n" +
+        "总打卡次数：" + list.length + "\n" +
+        "总学习/运动时长：" + totalMin + " 分钟\n" +
+        "平均每次时长：" + avg + " 分钟\n\n" +
+        "研究生学习：" + categoryCount.grad + " 次\n" +
+        "雅思：" + categoryCount.ielts + " 次\n" +
+        "学习投资：" + categoryCount.invest + " 次\n" +
+        "运动：" + categoryCount.sport + " 次\n\n" +
+        "高频任务：" + topText + "\n\n" +
+        "建议：\n" +
+        "1. 优先巩固完成度低但重要的任务。\n" +
+        "2. 保持学习与运动的平衡，不要只追求一端推进。\n" +
+        "3. 阶段性任务完成后建议归档，而不是删除。";
+
+      document.getElementById("summaryBox").value = text;
+    }
+
+    function makeWeekSummary() {
+      buildSummary(weekStart(), weekEnd(), "周总结");
+    }
+
+    function makeMonthSummary() {
+      buildSummary(monthStart(), monthEnd(), "月总结");
+    }
+
+    function makeHalfYearSummary() {
+      buildSummary(halfYearStart(), halfYearEnd(), "半年总结");
+    }
+
+    function makeCustomSummary() {
+      var s = document.getElementById("startDate").value;
+      var e = document.getElementById("endDate").value;
+      if (!s || !e) {
+        alert("请选择开始和结束日期");
+        return;
+      }
+      var start = new Date(s + "T00:00:00");
+      var end = new Date(e + "T23:59:59");
+      if (start > end) {
+        alert("开始日期不能晚于结束日期");
+        return;
+      }
+      buildSummary(start, end, "自定义时间跨度总结");
+    }
+
+    function copySummary() {
+      var box = document.getElementById("summaryBox");
+      if (!box.value.trim()) {
+        alert("请先生成总结");
+        return;
+      }
+      box.select();
+      document.execCommand("copy");
+      alert("已复制总结");
+    }
+
+    function resetAll() {
+      if (!confirm("确定清空全部吗？这会清空所有任务和历史记录。")) return;
+      state = defaultState();
+      saveState();
+      render();
+      document.getElementById("summaryBox").value = "";
+      document.getElementById("shareBox").value = "";
+    }
+
+    function taskTagClass(category, status) {
+      if (status === "archived") return "tag tag-archived";
+      if (category === "grad") return "tag tag-grad";
+      if (category === "ielts") return "tag tag-ielts";
+      if (category === "invest") return "tag tag-invest";
+      return "tag tag-sport";
+    }
+
+    function renderStats() {
+      document.getElementById("weeklyCount").textContent = weeklyCountAll();
+      document.getElementById("weeklyMinutes").textContent = weeklyMinutesAll();
+      document.getElementById("allCount").textContent = allCount();
+      document.getElementById("allMinutes").textContent = allMinutes();
+      document.getElementById("activeTaskCount").textContent = activeTaskCount();
+      document.getElementById("archivedTaskCount").textContent = archivedTaskCount();
+    }
+
+    function renderTasks() {
+      var html = "";
+
+      for (var i = 0; i < state.tasks.length; i++) {
+        var t = state.tasks[i];
+        if (t.status !== "active") continue;
+
+        var done = weeklyTaskCount(t.id);
+        var target = Number(t.target || 1);
+        var percent = Math.min(done / target * 100, 100);
+
+        html += ''
+          + '<div class="task-card">'
+          +   '<div class="task-head">'
+          +     '<div>'
+          +       '<div class="task-name">' + esc(t.name) + '</div>'
+          +       '<div class="small">' + esc(categoryMap[t.category]) + '</div>'
+          +     '</div>'
+          +     '<span class="' + taskTagClass(t.category, t.status) + '">' + esc(categoryMap[t.category]) + '</span>'
+          +   '</div>'
+          +   '<div class="small">本周完成：' + done + ' / ' + target + '</div>'
+          +   '<div class="progress"><div class="bar" style="width:' + percent + '%"></div></div>'
+          +   '<div class="row">'
+          +     '<input type="number" value="' + target + '" min="1" onchange="updateTaskTarget(\'' + t.id + '\', this.value)" placeholder="目标次数">'
+          +     '<button class="light" onclick="archiveTask(\'' + t.id + '\')">归档任务</button>'
+          +   '</div>'
+          +   '<div class="row">'
+          +     '<input id="minutes_' + t.id + '" type="number" placeholder="分钟数">'
+          +     '<input id="date_' + t.id + '" type="date" value="' + todayStr() + '">'
+          +   '</div>'
+          +   '<div class="row">'
+          +     '<input id="note_' + t.id + '" class="flex1" placeholder="备注（可选）">'
+          +     '<button onclick="addRecord(\'' + t.id + '\')">打卡</button>'
+          +   '</div>'
+          + '</div>';
+      }
+
+      if (!html) html = '<div class="small">暂无活跃任务，你可以新建任务或从归档区恢复。</div>';
+      document.getElementById("taskGrid").innerHTML = html;
+    }
+
+    function renderArchived() {
+      var html = "";
+      for (var i = 0; i < state.tasks.length; i++) {
+        var t = state.tasks[i];
+        if (t.status !== "archived") continue;
+
+        html += ''
+          + '<div class="archived-item">'
+          +   '<div class="record-top">'
+          +     '<div><strong>' + esc(t.name) + '</strong> · <span class="small">' + esc(categoryMap[t.category]) + '</span></div>'
+          +     '<span class="' + taskTagClass(t.category, t.status) + '">已归档</span>'
+          +   '</div>'
+          +   '<div class="small">原每周目标：' + t.target + ' 次</div>'
+          +   '<div class="row">'
+          +     '<button class="light" onclick="restoreTask(\'' + t.id + '\')">恢复任务</button>'
+          +     '<button class="light" onclick="permanentDeleteTask(\'' + t.id + '\')">永久删除</button>'
+          +   '</div>'
+          + '</div>';
+      }
+
+      if (!html) html = '<div class="small">暂无归档任务。</div>';
+      document.getElementById("archivedBox").innerHTML = html;
+    }
+
+    function renderRecords() {
+      var html = "";
+      if (!state.records.length) {
+        html = '<div class="small">还没有记录，先打第一条卡吧。</div>';
+      } else {
+        for (var i = 0; i < state.records.length; i++) {
+          var r = state.records[i];
+          var task = taskById(r.taskId);
+          var status = task ? task.status : "archived";
+
+          html += ''
+            + '<div class="record">'
+            +   '<div class="record-top">'
+            +     '<span class="' + taskTagClass(r.category, status) + '">' + esc(categoryMap[r.category]) + (status === "archived" ? " · 已归档任务" : "") + '</span>'
+            +     '<span class="small">' + esc(r.date) + '</span>'
+            +   '</div>'
+            +   '<div><strong>' + esc(r.taskName) + '</strong> · ' + r.minutes + ' 分钟</div>'
+            +   (r.note ? '<div class="small" style="margin-top:6px;">' + esc(r.note) + '</div>' : '')
+            +   '<div style="margin-top:8px;"><button class="light" onclick="deleteRecord(\'' + r.id + '\')">删除记录</button></div>'
+            + '</div>';
+        }
+      }
+      document.getElementById("recordList").innerHTML = html;
+    }
+
+    function render() {
+      renderStats();
+      renderTasks();
+      renderArchived();
+      renderRecords();
+    }
+
+    render();
+  </script>
+</body>
+</html>
