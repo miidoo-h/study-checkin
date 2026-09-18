@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学习打卡与阶段总结</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+    .desc {
+      color: #6b7280;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .topbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    button {
+      border: none;
+      background: #4f46e5;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button.light {
+      background: white;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+    }
+    button.danger {
+      background: #dc2626;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+    .small {
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .num {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+    }
+    .section h2 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+    .goal {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .goal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .goal-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .pill-wrap {
+      margin: 10px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-block;
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .progress {
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    input, select, textarea {
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: white;
+      box-sizing: border-box;
+    }
+    input, select {
+      min-width: 140px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      resize: vertical;
+    }
+    .flex1 {
+      flex: 1;
+    }
+    .record {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+    .tag {
+      display: inline-block;
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>学习打卡与阶段总结</h1>
+    <div class="desc">
+      支持打卡、周总结、月总结、半年总结、自定义时间跨度总结。
+    </div>
+
+    <div class="topbar">
+      <button class="light" onclick="exportData()">导出数据</button>
+      <button class="light" onclick="copyExport()">复制导出数据</button>
+      <button class="light" onclick="importData()">导入数据</button>
+      <button class="danger" onclick="resetAll()">清空全部</button>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="small">本周总打卡</div>
+        <div class="num" id="totalNum">0</div>
+      </div>
+      <div class="card">
+        <div class="small">研究生学习</div>
+        <div class="num" id="gradNum">0</div>
+      </div>
+      <div class="card">
+        <div class="small">雅思</div>
+        <div class="num" id="ieltsNum">0</div>
+      </div>
+      <div class="card">
+        <div class="small">学习投资</div>
+        <div class="num" id="investNum">0</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>添加自定义作业</h2>
+      <div class="row">
+        <input id="homeworkInput" class="flex1" placeholder="输入作业名称，比如：药剂学报告">
+        <button onclick="addHomework()">添加作业</button>
+      </div>
+      <div class="pill-wrap" id="homeworkList"></div>
+    </div>
+
+    <div class="section">
+      <h2>打卡区域</h2>
+      <div id="goalArea"></div>
+    </div>
+
+    <div class="section">
+      <h2>总结生成器</h2>
+      <div class="row">
+        <button onclick="makeWeekSummary()">周总结</button>
+        <button onclick="makeMonthSummary()">月总结</button>
+        <button onclick="makeHalfYearSummary()">半年总结</button>
+        <button class="light" onclick="copySummary()">复制总结</button>
+      </div>
+
+      <div class="row">
+        <input id="startDate" type="date">
+        <input id="endDate" type="date">
+        <button onclick="makeCustomSummary()">生成自定义时间跨度总结</button>
+      </div>
+
+      <textarea id="summaryBox" placeholder="总结会显示在这里"></textarea>
+    </div>
+
+    <div class="section">
+      <h2>分享数据</h2>
+      <textarea id="shareBox" placeholder="点击“导出数据”后，这里会出现可分享的数据。"></textarea>
+    </div>
+
+    <div class="section">
+      <h2>打卡记录</h2>
+      <div id="recordList"></div>
+    </div>
+  </div>
+
+  <script>
+    var STORAGE_KEY = "study-checkin-review-v1";
+
+    var state = loadState();
+
+    var goals = {
+      grad: {
+        name: "研究生学习",
+        target: 3,
+        subs: []
+      },
+      ielts: {
+        name: "雅思",
+        target: 4,
+        subs: ["单词", "精听", "文本", "口语"]
+      },
+      invest: {
+        name: "学习投资",
+        target: 2,
+        subs: ["基础学习", "阅读/复盘"]
+      }
+    };
+
+    function defaultState() {
+      return {
+        records: [],
+        homework: ["课程作业"]
+      };
+    }
+
+    function loadState() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultState();
+        var parsed = JSON.parse(raw);
+        if (!parsed.records) parsed.records = [];
+        if (!parsed.homework || !parsed.homework.length) parsed.homework = ["课程作业"];
+        return parsed;
+      } catch (e) {
+        return defaultState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function weekStart() {
+      var d = new Date();
+      var day = d.getDay();
+      var diff = day === 0 ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function weekEnd() {
+      var d = weekStart();
+      d.setDate(d.getDate() + 6);
+      d.setHours(23, 59, 59, 999);
+      return d;
+    }
+
+    function monthStart() {
+      var d = new Date();
+      return new Date(d.getFullYear(), d.getMonth(), 1);
+    }
+
+    function monthEnd() {
+      var d = new Date();
+      return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+    }
+
+    function halfYearStart() {
+      var d = new Date();
+      var month = d.getMonth();
+      if (month < 6) {
+        return new Date(d.getFullYear(), 0, 1);
+      } else {
+        return new Date(d.getFullYear(), 6, 1);
+      }
+    }
+
+    function halfYearEnd() {
+      var d = new Date();
+      var month = d.getMonth();
+      if (month < 6) {
+        return new Date(d.getFullYear(), 5, 30, 23, 59, 59, 999);
+      } else {
+        return new Date(d.getFullYear(), 11, 31, 23, 59, 59, 999);
+      }
+    }
+
+    function inRange(dateStr, start, end) {
+      var d = new Date(dateStr + "T00:00:00");
+      return d >= start && d <= end;
+    }
+
+    function countGoal(goalKey) {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        if (state.records[i].goal === goalKey && inRange(state.records[i].date, weekStart(), weekEnd())) n++;
+      }
+      return n;
+    }
+
+    function countAll() {
+      var n = 0;
+      for (var i = 0; i < state.records.length; i++) {
+        if (inRange(state.records[i].date, weekStart(), weekEnd())) n++;
+      }
+      return n;
+    }
+
+    function esc(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function addHomework() {
+      var input = document.getElementById("homeworkInput");
+      var name = input.value.trim();
+      if (!name) {
+        alert("请输入作业名称");
+        return;
+      }
+      if (state.homework.indexOf(name) === -1) {
+        state.homework.push(name);
+        saveState();
+        render();
+      }
+      input.value = "";
+    }
+
+    function removeHomework(name) {
+      if (name === "课程作业") return;
+      var arr = [];
+      for (var i = 0; i < state.homework.length; i++) {
+        if (state.homework[i] !== name) arr.push(state.homework[i]);
+      }
+      state.homework = arr;
+      saveState();
+      render();
+    }
+
+    function addRecord(goalKey) {
+      var sub = document.getElementById(goalKey + "_sub").value;
+      var minutes = Number(document.getElementById(goalKey + "_minutes").value || 0);
+      var date = document.getElementById(goalKey + "_date").value || todayStr();
+      var note = document.getElementById(goalKey + "_note").value.trim();
+
+      if (!sub) {
+        alert("请选择细分项");
+        return;
+      }
+      if (!minutes || minutes <= 0) {
+        alert("请输入分钟数");
+        return;
+      }
+
+      state.records.unshift({
+        id: Date.now() + "_" + Math.random().toString(36).slice(2, 8),
+        goal: goalKey,
+        sub: sub,
+        minutes: minutes,
+        date: date,
+        note: note
+      });
+
+      saveState();
+      render();
+    }
+
+    function deleteRecord(id) {
+      var arr = [];
+      for (var i = 0; i < state.records.length; i++) {
+        if (state.records[i].id !== id) arr.push(state.records[i]);
+      }
+      state.records = arr;
+      saveState();
+      render();
+    }
+
+    function exportData() {
+      document.getElementById("shareBox").value = JSON.stringify(state, null, 2);
+    }
+
+    function copyExport() {
+      var box = document.getElementById("shareBox");
+      if (!box.value.trim()) exportData();
+      box.select();
+      document.execCommand("copy");
+      alert("已复制导出数据");
+    }
+
+    function importData() {
+      var text = prompt("请粘贴分享数据：");
+      if (!text) return;
+      try {
+        var parsed = JSON.parse(text);
+        if (!parsed.records || !parsed.homework) {
+          alert("数据格式不正确");
+          return;
+        }
+        state = parsed;
+        saveState();
+        render();
+        alert("导入成功");
+      } catch (e) {
+        alert("导入失败");
+      }
+    }
+
+    function buildSummary(start, end, title) {
+      var list = [];
+      var totalMin = 0;
+      var grad = 0;
+      var ielts = 0;
+      var invest = 0;
+      var subMap = {};
+
+      for (var i = 0; i < state.records.length; i++) {
+        var r = state.records[i];
+        if (inRange(r.date, start, end)) {
+          list.push(r);
+          totalMin += Number(r.minutes || 0);
+          if (r.goal === "grad") grad++;
+          if (r.goal === "ielts") ielts++;
+          if (r.goal === "invest") invest++;
+          if (!subMap[r.sub]) subMap[r.sub] = 0;
+          subMap[r.sub]++;
+        }
+      }
+
+      var top = [];
+      for (var key in subMap) {
+        top.push([key, subMap[key]]);
+      }
+      top.sort(function(a, b) { return b[1] - a[1]; });
+
+      var topText = "暂无";
+      if (top.length > 0) {
+        var arr = [];
+        for (var j = 0; j < Math.min(top.length, 5); j++) {
+          arr.push(top[j][0] + "（" + top[j][1] + "次）");
+        }
+        topText = arr.join("、");
+      }
+
+      var avg = list.length ? Math.round(totalMin / list.length) : 0;
+
+      var text =
+        "【" + title + "】\n\n" +
+        "时间范围：" + start.toISOString().slice(0,10) + " 至 " + end.toISOString().slice(0,10) + "\n\n" +
+        "总打卡次数：" + list.length + "\n" +
+        "总学习时长：" + totalMin + " 分钟\n" +
+        "平均每次时长：" + avg + " 分钟\n\n" +
+        "研究生学习：" + grad + " 次\n" +
+        "雅思：" + ielts + " 次\n" +
+        "学习投资：" + invest + " 次\n\n" +
+        "高频任务：" + topText + "\n\n" +
+        "建议：\n" +
+        "1. 研究生学习继续优先处理作业和文献阅读。\n" +
+        "2. 雅思保持单词、精听、文本、口语均衡推进。\n" +
+        "3. 投资学习保持持续输入，避免长时间断档。";
+
+      document.getElementById("summaryBox").value = text;
+    }
+
+    function makeWeekSummary() {
+      buildSummary(weekStart(), weekEnd(), "周总结");
+    }
+
+    function makeMonthSummary() {
+      buildSummary(monthStart(), monthEnd(), "月总结");
+    }
+
+    function makeHalfYearSummary() {
+      buildSummary(halfYearStart(), halfYearEnd(), "半年总结");
+    }
+
+    function makeCustomSummary() {
+      var s = document.getElementById("startDate").value;
+      var e = document.getElementById("endDate").value;
+      if (!s || !e) {
+        alert("请选择开始和结束日期");
+        return;
+      }
+      var start = new Date(s + "T00:00:00");
+      var end = new Date(e + "T23:59:59");
+      if (start > end) {
+        alert("开始日期不能晚于结束日期");
+        return;
+      }
+      buildSummary(start, end, "自定义时间跨度总结");
+    }
+
+    function copySummary() {
+      var box = document.getElementById("summaryBox");
+      if (!box.value.trim()) {
+        alert("请先生成总结");
+        return;
+      }
+      box.select();
+      document.execCommand("copy");
+      alert("已复制总结");
+    }
+
+    function resetAll() {
+      if (!confirm("确定清空全部吗？")) return;
+      state = defaultState();
+      saveState();
+      render();
+      document.getElementById("summaryBox").value = "";
+      document.getElementById("shareBox").value = "";
+    }
+
+    function renderHomework() {
+      var html = "";
+      for (var i = 0; i < state.homework.length; i++) {
+        var item = state.homework[i];
+        html += '<span class="pill">' + esc(item);
+        if (item !== "课程作业") {
+          html += ' <span style="cursor:pointer;" onclick="removeHomework(\'' + item.replace(/'/g, "\\'") + '\')">×</span>';
+        }
+        html += '</span>';
+      }
+      document.getElementById("homeworkList").innerHTML = html;
+    }
+
+    function renderGoals() {
+      var html = "";
+
+      for (var key in goals) {
+        var g = goals[key];
+        var count = countGoal(key);
+        var percent = Math.min(count / g.target * 100, 100);
+
+        var pills = "";
+        var options = '<option value="">选择细分项</option>';
+
+        if (key === "grad") {
+          pills = '<span class="pill">作业（可自定义）</span><span class="pill">文献阅读</span>';
+          for (var i = 0; i < state.homework.length; i++) {
+            options += '<option value="作业：' + esc(state.homework[i]) + '">作业：' + esc(state.homework[i]) + '</option>';
+          }
+          options += '<option value="文献阅读">文献阅读</option>';
+        } else {
+          for (var j = 0; j < g.subs.length; j++) {
+            pills += '<span class="pill">' + esc(g.subs[j]) + '</span>';
+            options += '<option value="' + esc(g.subs[j]) + '">' + esc(g.subs[j]) + '</option>';
+          }
+        }
+
+        html += ''
+          + '<div class="goal">'
+          + '<div class="goal-head">'
+          + '<div><div class="goal-title">' + g.name + '</div><div class="small">每周 ' + g.target + ' 次</div></div>'
+          + '<div><strong>' + count + ' / ' + g.target + '</strong></div>'
+          + '</div>'
+          + '<div class="pill-wrap">' + pills + '</div>'
+          + '<div class="progress"><div class="bar" style="width:' + percent + '%"></div></div>'
+          + '<div class="small">' + (count >= g.target ? '本周目标已完成' : ('距离完成还差 ' + (g.target - count) + ' 次')) + '</div>'
+          + '<div class="row">'
+          + '<select id="' + key + '_sub">' + options + '</select>'
+          + '<input id="' + key + '_minutes" type="number" placeholder="分钟数">'
+          + '<input id="' + key + '_date" type="date" value="' + todayStr() + '">'
+          + '</div>'
+          + '<div class="row">'
+          + '<input id="' + key + '_note" class="flex1" placeholder="备注（可选）">'
+          + '<button onclick="addRecord(\'' + key + '\')">打卡</button>'
+          + '</div>'
+          + '</div>';
+      }
+
+      document.getElementById("goalArea").innerHTML = html;
+    }
+
+    function renderSummary() {
+      document.getElementById("totalNum").textContent = countAll();
+      document.getElementById("gradNum").textContent = countGoal("grad");
+      document.getElementById("ieltsNum").textContent = countGoal("ielts");
+      document.getElementById("investNum").textContent = countGoal("invest");
+    }
+
+    function renderRecords() {
+      var html = "";
+      if (!state.records.length) {
+        html = '<div class="small">还没有记录，先打第一条卡吧。</div>';
+      } else {
+        for (var i = 0; i < state.records.length; i++) {
+          var r = state.records[i];
+          html += ''
+            + '<div class="record">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;">'
+            + '<span class="tag">' + esc(goals[r.goal].name) + '</span>'
+            + '<span class="small">' + esc(r.date) + '</span>'
+            + '</div>'
+            + '<div><strong>' + esc(r.sub) + '</strong> · ' + r.minutes + ' 分钟</div>'
+            + (r.note ? '<div class="small" style="margin-top:6px;">' + esc(r.note) + '</div>' : '')
+            + '<div style="margin-top:8px;"><button class="light" onclick="deleteRecord(\'' + r.id + '\')">删除</button></div>'
+            + '</div>';
+        }
+      }
+      document.getElementById("recordList").innerHTML = html;
+    }
+
+    function render() {
+      renderHomework();
+      renderGoals();
+      renderSummary();
+      renderRecords();
+    }
+
+    render();
+  </script>
+</body>
+</html>
